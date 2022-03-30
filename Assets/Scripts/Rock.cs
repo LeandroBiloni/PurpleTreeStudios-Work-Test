@@ -6,8 +6,7 @@ public class Rock : MonoBehaviour
     [SerializeField] private float _timeToDestroy;
 
     private float _gravity;    
-    private float _verticalSpeed;
-    private float _horizontalSpeed;
+    private Vector2 _speed;
     private float _angle;
     private Vector3 _initialPos;
 
@@ -15,6 +14,8 @@ public class Rock : MonoBehaviour
     private bool _move = false;
 
     private float _currentTime = 0;
+
+    private Vector3 _goalPosition;
 
     private void Start()
     {
@@ -32,37 +33,34 @@ public class Rock : MonoBehaviour
     /// <param name="speed">Rock speed.</param>
     /// <param name="angle">Throw angle.</param>
     /// <param name="gravity">Gravity force applied.</param>
-    public void SetAndInitialize(float speed, float angle, float gravity)
+    public void SetAndInitialize(float speed, float angle, float gravity, Vector3 goalPosition)
     {
-        _verticalSpeed = speed;
+        _speed.x = speed;
 
-        _horizontalSpeed = speed;
+        _speed.y = speed;        
 
         _angle = angle;
 
         _gravity = gravity;
 
+        _goalPosition = goalPosition;
+
         _move = true;
     }
 
     #region Movement
-    void Move()
+    private void Move()
     {
         _currentTime += Time.deltaTime;
-        var xPos = _initialPos.x + _horizontalSpeed * Mathf.Cos(Mathf.Deg2Rad * _angle) * _currentTime;
+        var xPos = _initialPos.x + _speed.x * Mathf.Cos(Mathf.Deg2Rad * _angle) * _currentTime;
 
-        var yPos = _initialPos.y + _verticalSpeed * Mathf.Sin(Mathf.Deg2Rad * _angle) * _currentTime + (-_gravity / 2) * Mathf.Pow(_currentTime, 2);
+        var yPos = _initialPos.y + _speed.y * Mathf.Sin(Mathf.Deg2Rad * _angle) * _currentTime + (-_gravity / 2) * Mathf.Pow(_currentTime, 2);
 
 
         transform.position = new Vector3(xPos, yPos);
-
-        if (transform.position.y <= 0)
-        {
-            
-        }
     }
 
-    void Stop()
+    private void Stop()
     {
         _currentTime = 0;
         _move = false;
@@ -70,11 +68,38 @@ public class Rock : MonoBehaviour
     }
     #endregion
 
-    IEnumerator Destroy()
+    private bool IsLastBounce()
     {
-        yield return new WaitForSeconds(_timeToDestroy);
+        var time = CalculateTimeForGoal();
 
-        Destroy(gameObject);
+        if (time <= 0) return false;
+
+        var posAtTime = transform.position.x + _speed.x * Mathf.Cos(Mathf.Deg2Rad * _angle) * time;
+
+        return posAtTime >= _goalPosition.x;
+    }
+
+    /// <summary>
+    /// Calculates the time it will take to reach goal height.
+    /// </summary>
+    /// <returns></returns>
+    private float CalculateTimeForGoal()
+    {
+        float a = -_gravity / 2;
+
+        float b = _speed.y * Mathf.Sin(Mathf.Deg2Rad * _angle);
+
+        //float c = _goalPosition.y - transform.position.y;
+
+        float c = transform.position.y - _goalPosition.y;
+
+        float det = Mathf.Pow(b, 2) - 4 * a * c;
+
+        if (det <= 0) return 0;
+
+        float time = (-b - Mathf.Sqrt(det)) / (2 * a);
+
+        return time;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -86,9 +111,25 @@ public class Rock : MonoBehaviour
             _initialPos = transform.position;
 
             _currentTime = 0;
-            _verticalSpeed = _verticalSpeed * box.GetVerticalBounceMultiplier();
 
-            _horizontalSpeed = _horizontalSpeed * box.GetHorizontalBounceMultiplier();
+            _speed.y = _speed.y * box.GetVerticalBounceMultiplier();
+
+            _speed.x = _speed.x * box.GetHorizontalBounceMultiplier();
+
+            if (IsLastBounce())
+            {
+                Debug.Log("Last bounce");
+
+                var time = CalculateTimeForGoal();
+                // Vxf = (Xf - Xi) / (Cos(ang) * t)
+                var spx = (_goalPosition.x - transform.position.x) / (Mathf.Cos(Mathf.Deg2Rad * _angle) * time);
+                _speed.x = spx;
+
+                // Vyf = (Yf - Yi + 1/2 g * t^2) / (Sin(ang) * t)
+
+                var spy = (_goalPosition.y - transform.position.y + (_gravity / 2) * Mathf.Pow(time, 2)) / (Mathf.Sin(Mathf.Deg2Rad * _angle) * time);
+                _speed.y = spy;
+            }
             return;
         }
 
@@ -96,6 +137,20 @@ public class Rock : MonoBehaviour
         {
             Stop();
             StartCoroutine(Destroy());
+            return;
         }
+
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Goal"))
+        {
+            Destroy(gameObject);
+            return;
+        }
+    }
+
+    IEnumerator Destroy()
+    {
+        yield return new WaitForSeconds(_timeToDestroy);
+
+        Destroy(gameObject);
     }
 }

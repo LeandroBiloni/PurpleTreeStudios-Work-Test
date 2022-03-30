@@ -34,7 +34,7 @@ public class Launcher : MonoBehaviour
 
         var randomAngle = Random.Range(_throwAngleMin, _throwAngleMax);
 
-        rock.SetAndInitialize(randomSpeed, randomAngle, GameManager.Instance.GetGravity());
+        rock.SetAndInitialize(randomSpeed, randomAngle, GameManager.Instance.GetGravity(), GameManager.Instance.GetGoalPosition());
     }
 
 

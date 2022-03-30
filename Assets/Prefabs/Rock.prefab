@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 1825558530898344679}
   - component: {fileID: 6034856719263264546}
   - component: {fileID: 747288600550284439}
-  m_Layer: 0
-  m_Name: Roca
+  m_Layer: 9
+  m_Name: Rock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
