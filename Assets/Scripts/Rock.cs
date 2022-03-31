@@ -80,9 +80,9 @@ public class Rock : MonoBehaviour
     }
 
     /// <summary>
-    /// Calculates the time it will take to reach goal height.
+    /// Calculates the time it will take to reach goal.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The time.</returns>
     private float CalculateTimeForGoal()
     {
         float a = -_gravity / 2;
@@ -118,8 +118,6 @@ public class Rock : MonoBehaviour
 
             if (IsLastBounce())
             {
-                Debug.Log("Last bounce");
-
                 var time = CalculateTimeForGoal();
                 // Vxf = (Xf - Xi) / (Cos(ang) * t)
                 var spx = (_goalPosition.x - transform.position.x) / (Mathf.Cos(Mathf.Deg2Rad * _angle) * time);
@@ -136,7 +134,7 @@ public class Rock : MonoBehaviour
         if (collision.gameObject.layer == LayerMask.NameToLayer("Floor"))
         {
             Stop();
-            StartCoroutine(Destroy());
+            StartCoroutine(DestroyTimer());
             return;
         }
 
@@ -147,7 +145,7 @@ public class Rock : MonoBehaviour
         }
     }
 
-    IEnumerator Destroy()
+    IEnumerator DestroyTimer()
     {
         yield return new WaitForSeconds(_timeToDestroy);
 
