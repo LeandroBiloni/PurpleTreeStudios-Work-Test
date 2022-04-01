@@ -12,10 +12,7 @@ public class GameManager : MonoBehaviour
 
     public Action<float> OnTimeChange = (float v) => { };
 
-    [Header("Physics")]
-    [Tooltip("Positive value.")]
-    [Min(0)]
-    [SerializeField] private float _gravity;
+   
 
     [Header("Gameplay")]
 
@@ -23,15 +20,17 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private Goal _goal;
 
-    [SerializeField] private float _gameTime;
-
     [SerializeField] private Coin _coinPrefab;
 
-    [SerializeField] private int _rocksNeededForCoin;
+    private float _gameTime;
+
+    private int _rocksNeededForCoin;
 
     private int _rocksInGoal;
 
     private int _coinsPicked;
+
+    private float _gravity;
 
     [Header("Level")]
 
@@ -55,7 +54,7 @@ public class GameManager : MonoBehaviour
 
         _goal.OnRockReachedGoal += AddRock;
 
-        StartCoroutine(GameTimer());
+        StartCoroutine(StartGame());
     }
 
     public float GetGravity()
@@ -108,6 +107,10 @@ public class GameManager : MonoBehaviour
 
         coin = Instantiate(_coinPrefab, spawnPos, Quaternion.identity);
 
+        var difficulty = DifficultyMemory.Instance.GetDifficultySettings();
+
+        coin.SetDuration(difficulty.coinsDuration);
+
         coin.OnCoinPicked += AddCoin;
     }
 
@@ -118,12 +121,25 @@ public class GameManager : MonoBehaviour
         OnCoinAdded?.Invoke(_coinsPicked);
     }
 
-    IEnumerator GameTimer()
+    IEnumerator StartGame()
     {
-        yield return new WaitForEndOfFrame();
+        var difficulty = DifficultyMemory.Instance.GetDifficultySettings();
+
+        while (!difficulty)
+        {
+            yield return new WaitForEndOfFrame();
+
+            difficulty = DifficultyMemory.Instance.GetDifficultySettings();
+        }
+
+        _gravity = difficulty.gravity;
+
+        _gameTime = difficulty.gameTime;
+
+        _rocksNeededForCoin = difficulty.rocksNeededForCoin;
 
         var wait = new WaitForSeconds(1);
-        while(_gameTime >= 0)
+        while (_gameTime >= 0)
         {
             OnTimeChange(_gameTime);
             yield return wait;

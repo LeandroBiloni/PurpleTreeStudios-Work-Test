@@ -4,19 +4,19 @@ using UnityEngine;
 
 public class Coin : MonoBehaviour
 {
-    [Min(0)]
-    [SerializeField] private float _timeToDestroy;
+    public Action OnCoinPicked = () => { };
+
+    private float _duration;
 
     [SerializeField] private float _rotationSpeed;
 
-    [Header("On Pick Animation")]
-    [Min(0)]
-    [SerializeField] private float _moveSpeed;
+    [SerializeField] private float _rotationSpeedOnPickup;
+
+    [SerializeField] private float _moveSpeedToUI;
     [Min(0)]
     [SerializeField] private float _dissapearDistance;
 
-    public Action OnCoinPicked = () => { };
-
+    
     private void Start()
     {
         StartCoroutine(DestroyTimer());
@@ -28,10 +28,17 @@ public class Coin : MonoBehaviour
         transform.Rotate(Vector3.up, _rotationSpeed * Time.deltaTime);
     }
 
+    public void SetDuration(float duration)
+    {
+        _duration = duration;
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Hero"))
-        {            
+        {
+            _rotationSpeed = _rotationSpeedOnPickup;
+
             StopAllCoroutines();
 
             StartCoroutine(MoveTowardsUI());
@@ -40,7 +47,7 @@ public class Coin : MonoBehaviour
 
     IEnumerator DestroyTimer()
     {
-        yield return new WaitForSeconds(_timeToDestroy);
+        yield return new WaitForSeconds(_duration);
 
         Destroy(gameObject);
     }
@@ -57,7 +64,7 @@ public class Coin : MonoBehaviour
         
         while (Vector3.Distance(transform.position, coinsUIWorld) > _dissapearDistance)
         {
-            transform.position = Vector3.Lerp(transform.position, coinsUIWorld, _moveSpeed * Time.deltaTime);
+            transform.position = Vector3.Lerp(transform.position, coinsUIWorld, _moveSpeedToUI * Time.deltaTime);
 
             coinsUIWorld = Camera.main.ScreenToWorldPoint(coinsUITransform.position + offset);
 

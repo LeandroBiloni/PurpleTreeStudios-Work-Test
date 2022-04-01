@@ -5,14 +5,12 @@ public class Launcher : MonoBehaviour
 {
     [SerializeField] private Rock _rockPrefab;
     [SerializeField] private Transform _spawnPosition;
-    [SerializeField] private float _throwSpeedMin;
-    [SerializeField] private float _throwSpeedMax;
-    [SerializeField] private float _throwAngleMin;
-    [SerializeField] private float _throwAngleMax;
-
-    [Min(0)]
-    [SerializeField] private float _throwSpacingMin;
-    [SerializeField] private float _throwSpacingMax;
+    private float _throwSpeedMin;
+    private float _throwSpeedMax;
+    private float _throwAngleMin;
+    private float _throwAngleMax;
+    private float _throwSpacingMin;
+    private float _throwSpacingMax;
     private float _timeForNextThrow;
 
     private Animator _animator;
@@ -21,9 +19,7 @@ public class Launcher : MonoBehaviour
     {
         _animator = GetComponent<Animator>();
 
-        _timeForNextThrow = Random.Range(_throwSpacingMin, _throwSpacingMax);
-
-        StartCoroutine(RockThrowTimer());
+        StartCoroutine(Configuration());
     }
 
     //Called by animation event
@@ -38,6 +34,30 @@ public class Launcher : MonoBehaviour
         rock.SetAndInitialize(randomSpeed, randomAngle, GameManager.Instance.GetGravity(), GameManager.Instance.GetGoalPosition());
     }
 
+    IEnumerator Configuration()
+    {
+        var difficulty = DifficultyMemory.Instance.GetDifficultySettings();
+
+        while (!difficulty)
+        {
+            yield return new WaitForEndOfFrame();
+
+            difficulty = DifficultyMemory.Instance.GetDifficultySettings();
+        }
+
+        _throwAngleMin = difficulty.launcherThrowAngleMin;
+        _throwAngleMax = difficulty.launcherThrowAngleMax;
+
+        _throwSpeedMin = difficulty.launcherThrowSpeedMin;
+        _throwSpeedMax = difficulty.launcherThrowSpeedMax;
+
+        _throwSpacingMin = difficulty.launcherThrowSpacingMin;
+        _throwSpacingMax = difficulty.launcherThrowSpacingMax;
+
+        _timeForNextThrow = Random.Range(_throwSpacingMin, _throwSpacingMax);
+
+        StartCoroutine(RockThrowTimer());
+    }
 
     IEnumerator RockThrowTimer()
     {

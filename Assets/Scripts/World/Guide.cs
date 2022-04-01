@@ -10,19 +10,14 @@ public class Guide : MonoBehaviour
 
         var time = Utilities.TimeForFinalPositionY(speed.y, angle, gravity, initialPos.y, boxPos.y);
 
-        Debug.Log("time: " + time);
-
         var newPos = Vector3.zero;
 
-        Debug.Log("init: " + initialPos.x);
-        //Xf = Xi + (Vi * Cos(ang) * t)
-        newPos.x = initialPos.x + (speed.x * Mathf.Cos(Mathf.Deg2Rad * angle)* time);
+        newPos.x = Utilities.CalculatePositionX(initialPos.x, speed.x, angle, time);
 
         newPos.y = 0;
 
         transform.position = newPos;
 
-        Debug.Log("pos: " + transform.position);
     }
 
     public void DestroyGuide()

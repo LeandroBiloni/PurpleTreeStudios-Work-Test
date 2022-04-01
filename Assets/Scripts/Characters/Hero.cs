@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Hero : MonoBehaviour
@@ -8,6 +9,11 @@ public class Hero : MonoBehaviour
     [SerializeField] private float _maxMoveSpeed;
     [SerializeField] private float _acceleration;
     [SerializeField] private float _breakStrength;
+
+    [Space]
+
+    [SerializeField] private ParticleSystem _smoke;
+
     private float _moveSpeed;
 
     private Vector3 _lastDir;
@@ -26,6 +32,8 @@ public class Hero : MonoBehaviour
         _animator = GetComponent<Animator>();
 
         _spriteRenderer = GetComponent<SpriteRenderer>();
+
+        StartCoroutine(Configure());
     }
 
     // Update is called once per frame
@@ -49,6 +57,13 @@ public class Hero : MonoBehaviour
         //Accelerates
         if (direction.x != 0)
         {
+            _lastDir = direction.normalized;
+            if (_moveSpeed == 0)
+            {
+                var pos = new Vector3(transform.position.x - _lastDir.x , _smoke.transform.position.y);
+                _smoke.transform.position = pos;
+                _smoke.Play();
+            }
             _moveSpeed += _acceleration;
 
             if (_moveSpeed >= _maxMoveSpeed)
@@ -65,7 +80,7 @@ public class Hero : MonoBehaviour
             {
                 _spriteRenderer.flipX = true;
             }
-            _lastDir = direction.normalized;
+            
         }
 
         //Breaks
@@ -100,5 +115,25 @@ public class Hero : MonoBehaviour
 
             _rigidBody.velocity = Vector2.zero;
         }
+    }
+
+    IEnumerator Configure()
+    {
+        var difficulty = DifficultyMemory.Instance.GetDifficultySettings();
+
+        while (!difficulty)
+        {
+            yield return new WaitForEndOfFrame();
+
+            difficulty = DifficultyMemory.Instance.GetDifficultySettings();
+        }
+
+        
+
+        _maxMoveSpeed = difficulty.heroMaxMoveSpeed;
+        _acceleration = difficulty.heroAcceleration;
+        _breakStrength = difficulty.heroBreakStrength;
+
+        Debug.Log("configured hero: " + _maxMoveSpeed + " " + _acceleration + " " + _breakStrength);
     }
 }

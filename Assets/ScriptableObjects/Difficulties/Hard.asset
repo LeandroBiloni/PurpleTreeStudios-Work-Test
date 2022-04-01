@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71088085e5844db46b1dbe758e249d49, type: 3}
+  m_Name: Hard
+  m_EditorClassIdentifier: 
+  difficultyName: Hard
+  buttonColor: {r: 1, g: 0.06914902, b: 0, a: 1}
+  gravity: 9.8
+  gameTime: 30
+  rocksNeededForCoin: 1
+  coinsDuration: 5
+  heroMaxMoveSpeed: 20
+  heroAcceleration: 20
+  heroBreakStrength: 20
+  boxVerticalMultiplier: 1.2
+  boxHorizontalMultiplier: 1.1
+  launcherThrowAngleMin: 5
+  launcherThrowAngleMax: 89
+  launcherThrowSpeedMin: 1
+  launcherThrowSpeedMax: 10
+  launcherThrowSpacingMin: 2
+  launcherThrowSpacingMax: 5

@@ -96,9 +96,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eda582274a1a4814cb1bd1f730899a9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _timeToDestroy: 100
   _rotationSpeed: 360
-  _moveSpeed: 5
+  _rotationSpeedOnPickup: 720
+  _moveSpeedToUI: 5
   _dissapearDistance: 1
 --- !u!58 &1976243976547107366
 CircleCollider2D:
