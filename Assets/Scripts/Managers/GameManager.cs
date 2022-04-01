@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Gameplay")]
 
-    [SerializeField] private Transform _hero;
+    [SerializeField] private Hero _hero;
 
     [SerializeField] private Goal _goal;
 
@@ -38,6 +38,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Transform _leftLimit;
 
     [SerializeField] private Transform _rightLimit;
+
+    [SerializeField] private Transform _floor;
 
     // Start is called before the first frame update
     private void Start()
@@ -66,6 +68,16 @@ public class GameManager : MonoBehaviour
         return _goal.transform.position;
     }
 
+    public Transform GetHeroBoxTransform()
+    {
+        return _hero.GetBoxTransform();
+    }
+
+    public float GetFloorHeight()
+    {
+        return _floor.position.y + (_floor.localScale.y / 2);
+    }
+
     private void AddRock()
     {
         _rocksInGoal++;
@@ -83,12 +95,12 @@ public class GameManager : MonoBehaviour
         var spawnPos = Vector3.zero;
 
         spawnPos.x = UnityEngine.Random.Range(_leftLimit.position.x + _leftLimit.localScale.x, _rightLimit.position.x - _rightLimit.localScale.x);
-        spawnPos.y = _hero.position.y;
+        spawnPos.y = _hero.transform.position.y;
 
         Coin coin = null;
-        if (Vector3.Distance(spawnPos, _hero.position) < 2)
+        if (Vector3.Distance(spawnPos, _hero.transform.position) < 2)
         {
-            while (Vector3.Distance(spawnPos, _hero.position) < 2)
+            while (Vector3.Distance(spawnPos, _hero.transform.position) < 2)
             {
                 spawnPos.x = UnityEngine.Random.Range(_leftLimit.position.x + _leftLimit.localScale.x, _rightLimit.position.x - _rightLimit.localScale.x);
             }

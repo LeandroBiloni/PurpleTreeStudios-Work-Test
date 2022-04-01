@@ -99,6 +99,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 125b7fca8efc4ed4093d7228d38f0f16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _box: {fileID: 6776668427514485742}
   _maxMoveSpeed: 20
   _acceleration: 0.1
   _breakStrength: 0.1
@@ -148,7 +149,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 2
+  m_Constraints: 6
 --- !u!95 &4965362032691229663
 Animator:
   serializedVersion: 3

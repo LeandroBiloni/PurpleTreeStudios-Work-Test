@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class Hero : MonoBehaviour
 {
+    [SerializeField] private Transform _box;
+
+    [Header("Stats")]
     [SerializeField] private float _maxMoveSpeed;
     [SerializeField] private float _acceleration;
     [SerializeField] private float _breakStrength;
@@ -33,6 +36,11 @@ public class Hero : MonoBehaviour
         var dir = new Vector3(horizontal, 0);
         
         Move(dir);
+    }
+
+    public Transform GetBoxTransform()
+    {
+        return _box;
     }
 
 

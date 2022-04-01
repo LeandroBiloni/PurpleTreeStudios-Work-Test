@@ -4,9 +4,16 @@ using UnityEngine;
 
 public class Coin : MonoBehaviour
 {
+    [Min(0)]
     [SerializeField] private float _timeToDestroy;
+
     [SerializeField] private float _rotationSpeed;
-    [SerializeField] private float _moveToUISpeed;
+
+    [Header("On Pick Animation")]
+    [Min(0)]
+    [SerializeField] private float _moveSpeed;
+    [Min(0)]
+    [SerializeField] private float _dissapearDistance;
 
     public Action OnCoinPicked = () => { };
 
@@ -48,9 +55,9 @@ public class Coin : MonoBehaviour
         
         var endFrame = new WaitForEndOfFrame();
         
-        while (Vector3.Distance(transform.position, coinsUIWorld) > 1f)
+        while (Vector3.Distance(transform.position, coinsUIWorld) > _dissapearDistance)
         {
-            transform.position = Vector3.Lerp(transform.position, coinsUIWorld, _moveToUISpeed * Time.deltaTime);
+            transform.position = Vector3.Lerp(transform.position, coinsUIWorld, _moveSpeed * Time.deltaTime);
 
             coinsUIWorld = Camera.main.ScreenToWorldPoint(coinsUITransform.position + offset);
 

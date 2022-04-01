@@ -16,6 +16,7 @@ public class Launcher : MonoBehaviour
     private float _timeForNextThrow;
 
     private Animator _animator;
+
     private void Start()
     {
         _animator = GetComponent<Animator>();

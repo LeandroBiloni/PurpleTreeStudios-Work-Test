@@ -1010,6 +1010,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2769724329304497573, guid: 5ec0870e1bb54184f90c2acf6cc30e09, type: 3}
   m_PrefabInstance: {fileID: 2769724328062661193}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1586421385 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6776668426766302700, guid: 56be73fc21660544eabde2389ba6d0cd, type: 3}
+  m_PrefabInstance: {fileID: 6776668427055679926}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 125b7fca8efc4ed4093d7228d38f0f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1632066330
 GameObject:
   m_ObjectHideFlags: 0
@@ -1040,7 +1051,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gravity: 9.8
-  _hero: {fileID: 6776668427055679927}
+  _hero: {fileID: 1586421385}
   _goal: {fileID: 1494345782}
   _gameTime: 30
   _coinPrefab: {fileID: 3208611035348675731, guid: f4aa4b56191a018498ff3b1dc26955ec, type: 3}
@@ -1472,7 +1483,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 16dc67533e84eb14e94924c075a46ca6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

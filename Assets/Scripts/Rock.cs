@@ -3,7 +3,10 @@ using UnityEngine;
 
 public class Rock : MonoBehaviour
 {
+    [Min(0)]
     [SerializeField] private float _timeToDestroy;
+
+    [SerializeField] private Guide _guidePrefab;
 
     private float _gravity;    
     private Vector2 _speed;
@@ -17,6 +20,7 @@ public class Rock : MonoBehaviour
 
     private Vector3 _goalPosition;
 
+    private Guide _guide;
     private void Start()
     {
         _initialPos = transform.position;
@@ -46,15 +50,19 @@ public class Rock : MonoBehaviour
         _goalPosition = goalPosition;
 
         _move = true;
+
+        _guide = Instantiate(_guidePrefab);
+
+        _guide.CalculatePosition(_speed, _angle, _gravity, transform.position);
     }
 
     #region Movement
     private void Move()
     {
         _currentTime += Time.deltaTime;
-        var xPos = _initialPos.x + _speed.x * Mathf.Cos(Mathf.Deg2Rad * _angle) * _currentTime;
+        var xPos = Utilities.CalculatePositionX(_initialPos.x, _speed.x, _angle, _currentTime);
 
-        var yPos = _initialPos.y + _speed.y * Mathf.Sin(Mathf.Deg2Rad * _angle) * _currentTime + (-_gravity / 2) * Mathf.Pow(_currentTime, 2);
+        var yPos = Utilities.CalculatePositionY(_initialPos.y, _speed.y, _angle, _gravity, _currentTime);
 
 
         transform.position = new Vector3(xPos, yPos);
@@ -70,37 +78,14 @@ public class Rock : MonoBehaviour
 
     private bool IsLastBounce()
     {
-        var time = CalculateTimeForGoal();
+        var time = Utilities.TimeForFinalPositionY(_speed.y, _angle, GameManager.Instance.GetGravity(), transform.position.y, _goalPosition.y);
 
         if (time <= 0) return false;
 
-        var posAtTime = transform.position.x + _speed.x * Mathf.Cos(Mathf.Deg2Rad * _angle) * time;
+        var posAtTime = Utilities.CalculatePositionX(transform.position.x, _speed.x, _angle, time);
 
         return posAtTime >= _goalPosition.x;
-    }
-
-    /// <summary>
-    /// Calculates the time it will take to reach goal.
-    /// </summary>
-    /// <returns>The time.</returns>
-    private float CalculateTimeForGoal()
-    {
-        float a = -_gravity / 2;
-
-        float b = _speed.y * Mathf.Sin(Mathf.Deg2Rad * _angle);
-
-        //float c = _goalPosition.y - transform.position.y;
-
-        float c = transform.position.y - _goalPosition.y;
-
-        float det = Mathf.Pow(b, 2) - 4 * a * c;
-
-        if (det <= 0) return 0;
-
-        float time = (-b - Mathf.Sqrt(det)) / (2 * a);
-
-        return time;
-    }
+    }    
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -118,16 +103,14 @@ public class Rock : MonoBehaviour
 
             if (IsLastBounce())
             {
-                var time = CalculateTimeForGoal();
-                // Vxf = (Xf - Xi) / (Cos(ang) * t)
-                var spx = (_goalPosition.x - transform.position.x) / (Mathf.Cos(Mathf.Deg2Rad * _angle) * time);
-                _speed.x = spx;
+                var time = Utilities.TimeForFinalPositionY(_speed.y, _angle, GameManager.Instance.GetGravity(), transform.position.y, _goalPosition.y);
 
-                // Vyf = (Yf - Yi + 1/2 g * t^2) / (Sin(ang) * t)
+                _speed.x = Utilities.CalculateSpeedX(_goalPosition.x, transform.position.x, _angle, time);
 
-                var spy = (_goalPosition.y - transform.position.y + (_gravity / 2) * Mathf.Pow(time, 2)) / (Mathf.Sin(Mathf.Deg2Rad * _angle) * time);
-                _speed.y = spy;
+                _speed.y = Utilities.CalculateSpeedY(_goalPosition.y, transform.position.y, _gravity, _angle, time);
             }
+
+            _guide.CalculatePosition(_speed, _angle, _gravity, transform.position);
             return;
         }
 
@@ -135,11 +118,14 @@ public class Rock : MonoBehaviour
         {
             Stop();
             StartCoroutine(DestroyTimer());
+
+            _guide.DestroyGuide();
             return;
         }
 
         if (collision.gameObject.layer == LayerMask.NameToLayer("Goal"))
         {
+            _guide.DestroyGuide();
             Destroy(gameObject);
             return;
         }
