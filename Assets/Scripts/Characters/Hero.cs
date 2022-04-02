@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class Hero : MonoBehaviour
+public class Hero : MonoBehaviour, IControllable
 {
     [SerializeField] private Transform _box;
 
@@ -24,6 +24,8 @@ public class Hero : MonoBehaviour
 
     private SpriteRenderer _spriteRenderer;
 
+    private bool _canMove;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -33,12 +35,14 @@ public class Hero : MonoBehaviour
 
         _spriteRenderer = GetComponent<SpriteRenderer>();
 
-        StartCoroutine(Configure());
+        GameManager.Instance.AddControllable(this);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!_canMove) return;
+
         var horizontal = Input.GetAxis("Horizontal");
 
         var dir = new Vector3(horizontal, 0);
@@ -50,7 +54,6 @@ public class Hero : MonoBehaviour
     {
         return _box;
     }
-
 
     private void Move(Vector3 direction)
     {
@@ -104,6 +107,21 @@ public class Hero : MonoBehaviour
         _rigidBody.MovePosition(newPos);
     }
 
+    public void EnableControl()
+    {
+        var difficulty = DifficultyMemory.Instance.GetDifficultySettings();
+
+        _maxMoveSpeed = difficulty.heroMaxMoveSpeed;
+        _acceleration = difficulty.heroAcceleration;
+        _breakStrength = difficulty.heroBreakStrength;
+
+        _canMove = true;
+    }
+
+    public void DisableControl()
+    {
+        _canMove = false;
+    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -117,23 +135,5 @@ public class Hero : MonoBehaviour
         }
     }
 
-    IEnumerator Configure()
-    {
-        var difficulty = DifficultyMemory.Instance.GetDifficultySettings();
-
-        while (!difficulty)
-        {
-            yield return new WaitForEndOfFrame();
-
-            difficulty = DifficultyMemory.Instance.GetDifficultySettings();
-        }
-
-        
-
-        _maxMoveSpeed = difficulty.heroMaxMoveSpeed;
-        _acceleration = difficulty.heroAcceleration;
-        _breakStrength = difficulty.heroBreakStrength;
-
-        Debug.Log("configured hero: " + _maxMoveSpeed + " " + _acceleration + " " + _breakStrength);
-    }
+    
 }

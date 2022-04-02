@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class Launcher : MonoBehaviour
+public class Launcher : MonoBehaviour, IControllable
 {
     [SerializeField] private Rock _rockPrefab;
     [SerializeField] private Transform _spawnPosition;
@@ -19,7 +19,7 @@ public class Launcher : MonoBehaviour
     {
         _animator = GetComponent<Animator>();
 
-        StartCoroutine(Configuration());
+        GameManager.Instance.AddControllable(this);
     }
 
     //Called by animation event
@@ -34,16 +34,20 @@ public class Launcher : MonoBehaviour
         rock.SetAndInitialize(randomSpeed, randomAngle, GameManager.Instance.GetGravity(), GameManager.Instance.GetGoalPosition());
     }
 
-    IEnumerator Configuration()
+    IEnumerator RockThrowTimer()
+    {
+        yield return new WaitForSeconds(_timeForNextThrow);
+
+        _animator.SetTrigger("Throw");
+
+        _timeForNextThrow = Random.Range(_throwSpacingMin, _throwSpacingMax);
+
+        StartCoroutine(RockThrowTimer());
+    }
+
+    public void EnableControl()
     {
         var difficulty = DifficultyMemory.Instance.GetDifficultySettings();
-
-        while (!difficulty)
-        {
-            yield return new WaitForEndOfFrame();
-
-            difficulty = DifficultyMemory.Instance.GetDifficultySettings();
-        }
 
         _throwAngleMin = difficulty.launcherThrowAngleMin;
         _throwAngleMax = difficulty.launcherThrowAngleMax;
@@ -59,14 +63,8 @@ public class Launcher : MonoBehaviour
         StartCoroutine(RockThrowTimer());
     }
 
-    IEnumerator RockThrowTimer()
+    public void DisableControl()
     {
-        yield return new WaitForSeconds(_timeForNextThrow);
-
-        _animator.SetTrigger("Throw");
-
-        _timeForNextThrow = Random.Range(_throwSpacingMin, _throwSpacingMax);
-
-        StartCoroutine(RockThrowTimer());
+        StopAllCoroutines();
     }
 }

@@ -1,7 +1,8 @@
-﻿using UnityEngine.EventSystems;
+﻿using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.SceneManagement;
 
 public class DifficultyButton : Selectable, IPointerClickHandler
 {
@@ -9,17 +10,13 @@ public class DifficultyButton : Selectable, IPointerClickHandler
 
     public TextMeshProUGUI buttonText;
 
+    public UnityEvent OnClick;
+
     protected override void Start()
     {
         base.Start();
 
-        buttonText.text = difficultySettings.difficultyName;
-
-        ColorBlock colorsBlock= colors;
-
-        colorsBlock.normalColor = difficultySettings.buttonColor;
-
-        colors = colorsBlock;
+        ConfigureButton();
     }
 
     public virtual void OnPointerClick(PointerEventData eventData)
@@ -28,9 +25,19 @@ public class DifficultyButton : Selectable, IPointerClickHandler
         {
             return;
         }
-
         DifficultyMemory.Instance.SetDifficultySettings(difficultySettings);
+        OnClick?.Invoke();
+    }
 
-        SceneManager.LoadScene("Game");
+    [ContextMenu("Configure Button")]
+    void ConfigureButton()
+    {
+        buttonText.text = difficultySettings.difficultyName;
+
+        ColorBlock colorsBlock = colors;
+
+        colorsBlock.normalColor = difficultySettings.buttonColor;
+
+        colors = colorsBlock;
     }
 }

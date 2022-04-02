@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -12,6 +13,7 @@ public class GameManager : MonoBehaviour
 
     public Action<float> OnTimeChange = (float v) => { };
 
+    public Action OnGameEnd = () => {};
    
 
     [Header("Gameplay")]
@@ -40,8 +42,10 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private Transform _floor;
 
+    private List<IControllable> _controllables = new List<IControllable>();
+
     // Start is called before the first frame update
-    private void Start()
+    private void Awake()
     {
         if (!Instance)
         {
@@ -50,10 +54,12 @@ public class GameManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
-        }
+        }        
+    }
 
+    private void Start()
+    {
         _goal.OnRockReachedGoal += AddRock;
-
         StartCoroutine(StartGame());
     }
 
@@ -75,6 +81,11 @@ public class GameManager : MonoBehaviour
     public float GetFloorHeight()
     {
         return _floor.position.y + (_floor.localScale.y / 2);
+    }
+
+    public void AddControllable(IControllable controllable)
+    {
+        _controllables.Add(controllable);
     }
 
     private void AddRock()
@@ -125,6 +136,7 @@ public class GameManager : MonoBehaviour
     {
         var difficulty = DifficultyMemory.Instance.GetDifficultySettings();
 
+        //In case it can't be found in the first frame.
         while (!difficulty)
         {
             yield return new WaitForEndOfFrame();
@@ -138,6 +150,11 @@ public class GameManager : MonoBehaviour
 
         _rocksNeededForCoin = difficulty.rocksNeededForCoin;
 
+        foreach (var c in _controllables)
+        {
+            c.EnableControl();
+        }
+
         var wait = new WaitForSeconds(1);
         while (_gameTime >= 0)
         {
@@ -146,6 +163,12 @@ public class GameManager : MonoBehaviour
             _gameTime--;
         }
 
+        foreach (var c in _controllables)
+        {
+            c.DisableControl();
+        }
+
+        OnGameEnd?.Invoke();
         Debug.Log("endgame");
     }
 }

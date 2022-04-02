@@ -6,8 +6,7 @@ public class DifficultyMemory : MonoBehaviour
 
     [SerializeField] private DifficultySO _difficultySettings;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         if (!Instance)
         {

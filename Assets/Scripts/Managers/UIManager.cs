@@ -6,12 +6,19 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
 
+    [Header("Game Screen")]
+    [SerializeField] private GameObject _gameScreen;
     [SerializeField] private TextMeshProUGUI _rocksCounter;
     [SerializeField] private TextMeshProUGUI _timer;
     [SerializeField] private TextMeshProUGUI _coinsCounter;
     [SerializeField] private RectTransform _coinsIcon;
-    // Start is called before the first frame update
-    void Start()
+
+    [Header("End Screen")]
+    [SerializeField] private GameObject _endScreen;
+    [SerializeField] private TextMeshProUGUI _endRocksCounter;
+    [SerializeField] private TextMeshProUGUI _endCoinsCounter;
+
+    private void Awake()
     {
         if (!Instance)
         {
@@ -21,8 +28,17 @@ public class UIManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+    // Start is called before the first frame update
+    void Start()
+    {
+        _timer.text = DifficultyMemory.Instance.GetDifficultySettings().gameTime.ToString();
 
-        StartCoroutine(StartDelay());
+        GameManager.Instance.OnRockAdded += UpdateRocksCounter;
+        GameManager.Instance.OnTimeChange += UpdateTimer;
+        GameManager.Instance.OnCoinAdded += UpdateCoinsCounter;
+        GameManager.Instance.OnGameEnd += GameScreenOff;
+        GameManager.Instance.OnGameEnd += EndScreenOn;
     }
 
     public void UpdateRocksCounter(int value)
@@ -40,17 +56,20 @@ public class UIManager : MonoBehaviour
         _coinsCounter.text = "x " + value;
     }
 
-    IEnumerator StartDelay()
-    {
-        yield return new WaitForEndOfFrame();
-
-        GameManager.Instance.OnRockAdded += UpdateRocksCounter;
-        GameManager.Instance.OnTimeChange += UpdateTimer;
-        GameManager.Instance.OnCoinAdded += UpdateCoinsCounter;
-    }
-
     public RectTransform GetCoinsUIRect()
     {
         return _coinsIcon;
+    }
+
+    public void GameScreenOff()
+    {
+        _gameScreen.SetActive(false);
+    }
+
+    public void EndScreenOn()
+    {
+        _endRocksCounter.text = _rocksCounter.text;
+        _endCoinsCounter.text = _coinsCounter.text;
+        _endScreen.SetActive(true);
     }
 }
