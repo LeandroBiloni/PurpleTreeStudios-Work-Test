@@ -6,9 +6,9 @@ public class Hero : MonoBehaviour, IControllable
     [SerializeField] private Transform _box;
 
     [Header("Stats")]
-    [SerializeField] private float _maxMoveSpeed;
-    [SerializeField] private float _acceleration;
-    [SerializeField] private float _breakStrength;
+    private float _maxMoveSpeed;
+    private float _acceleration;
+    private float _breakStrength;
 
     [Space]
 

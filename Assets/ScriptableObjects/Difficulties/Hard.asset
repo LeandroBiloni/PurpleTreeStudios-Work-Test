@@ -16,6 +16,8 @@ MonoBehaviour:
   buttonColor: {r: 1, g: 0.06914902, b: 0, a: 1}
   gravity: 9.8
   gameTime: 30
+  rocksDurationOnFloor: 1
+  disableRockColliderOnFloor: 0
   rocksNeededForCoin: 1
   coinsDuration: 5
   heroMaxMoveSpeed: 20

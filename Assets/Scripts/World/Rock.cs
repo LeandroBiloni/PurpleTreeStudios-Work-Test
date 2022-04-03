@@ -7,7 +7,7 @@ public class Rock : MonoBehaviour
 
     [Min(0)]
     [SerializeField] private float _timeToDestroy;
-
+    [SerializeField] private bool _disableColliderOnFloor;
     private float _gravity;    
     private Vector2 _speed;
     private float _angle;
@@ -36,7 +36,7 @@ public class Rock : MonoBehaviour
     /// <param name="speed">Rock speed.</param>
     /// <param name="angle">Throw angle.</param>
     /// <param name="gravity">Gravity force applied.</param>
-    public void SetAndInitialize(float speed, float angle, float gravity, Vector3 goalPosition)
+    public void SetAndInitialize(float speed, float angle, float gravity, Vector3 goalPosition, float duration, bool disableCollider)
     {
         _speed.x = speed;
 
@@ -49,6 +49,10 @@ public class Rock : MonoBehaviour
         _goalPosition = goalPosition;
 
         _move = true;
+
+        _timeToDestroy = duration;
+
+        _disableColliderOnFloor = disableCollider;
 
         _guide = Instantiate(_guidePrefab);
 
@@ -72,6 +76,11 @@ public class Rock : MonoBehaviour
         _currentTime = 0;
         _move = false;
         transform.position = new Vector3(transform.position.x, 0);
+
+        if (_disableColliderOnFloor)
+        {
+            GetComponent<CircleCollider2D>().enabled = false;
+        }
     }
     #endregion
 

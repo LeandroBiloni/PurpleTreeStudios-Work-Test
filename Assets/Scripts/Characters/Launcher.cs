@@ -31,7 +31,11 @@ public class Launcher : MonoBehaviour, IControllable
 
         var randomAngle = Random.Range(_throwAngleMin, _throwAngleMax);
 
-        rock.SetAndInitialize(randomSpeed, randomAngle, GameManager.Instance.GetGravity(), GameManager.Instance.GetGoalPosition());
+        var gm = GameManager.Instance;
+
+        var diff = DifficultyMemory.Instance.GetDifficultySettings();
+
+        rock.SetAndInitialize(randomSpeed, randomAngle, gm.GetGravity(), gm.GetGoalPosition(), diff.rocksDurationOnFloor, diff.disableRockColliderOnFloor);
     }
 
     IEnumerator RockThrowTimer()

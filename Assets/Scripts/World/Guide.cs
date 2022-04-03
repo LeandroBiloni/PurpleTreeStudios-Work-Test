@@ -17,7 +17,6 @@ public class Guide : MonoBehaviour
         newPos.y = 0;
 
         transform.position = newPos;
-
     }
 
     public void DestroyGuide()
