@@ -4,7 +4,7 @@ public class DifficultyMemory : MonoBehaviour
 {
     public static DifficultyMemory Instance;
 
-    [SerializeField] private DifficultySO _difficultySettings;
+    private DifficultySO _difficultySettings;
 
     private void Awake()
     {

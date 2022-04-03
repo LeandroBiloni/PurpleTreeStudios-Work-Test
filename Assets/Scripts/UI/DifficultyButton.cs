@@ -21,7 +21,7 @@ public class DifficultyButton : Selectable, IPointerClickHandler
 
     public virtual void OnPointerClick(PointerEventData eventData)
     {
-        if (!IsActive() || !IsInteractable())
+        if (!IsActive() || !IsInteractable() || difficultySettings == null)
         {
             return;
         }
@@ -32,6 +32,8 @@ public class DifficultyButton : Selectable, IPointerClickHandler
     [ContextMenu("Configure Button")]
     void ConfigureButton()
     {
+        if (difficultySettings == null) return;
+
         buttonText.text = difficultySettings.difficultyName;
 
         ColorBlock colorsBlock = colors;

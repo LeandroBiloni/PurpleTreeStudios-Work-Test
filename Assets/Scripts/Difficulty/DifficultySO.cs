@@ -14,6 +14,7 @@ public class DifficultySO : ScriptableObject
     [Header("Level")]
     [Min(0)]
     public float gameTime;
+    [Min(0)]
     public float rocksDurationOnFloor;
     public bool disableRockColliderOnFloor;
     //TODO: Agregar time rocas y disable collider rocas

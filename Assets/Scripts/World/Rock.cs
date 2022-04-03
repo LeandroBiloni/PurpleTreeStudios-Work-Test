@@ -4,10 +4,9 @@ using UnityEngine;
 public class Rock : MonoBehaviour
 {
     [SerializeField] private Guide _guidePrefab;
-
-    [Min(0)]
-    [SerializeField] private float _timeToDestroy;
-    [SerializeField] private bool _disableColliderOnFloor;
+    
+    private float _timeToDestroy;
+    private bool _disableColliderOnFloor;
     private float _gravity;    
     private Vector2 _speed;
     private float _angle;
